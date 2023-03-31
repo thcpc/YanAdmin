@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yan.dao.TraineeMapper">
+    <resultMap id="trainee" type="com.yan.entity.TraineeEntity">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId" />
+        <result column="nick_name" property="nickName" />
+        <result column="level" property="level" />
+        <result column="latest_attendance_date" property="latestAttendanceDate" />
+        <result column="create_dt" property="createDt" />
+    </resultMap>
+    <resultMap id="traineeSign" type="com.yan.entity.TraineeSignEntity">
+        <result column="trainee_id" property="traineeId" />
+        <result column="create_dt" property="createDt" />
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+    <resultMap id="getSignDetails" type="com.yan.entity.TraineeSignDetailEntity">
+        <result column="is_reviewed" property="isReviewed" />
+        <result column="create_dt" property="createDt" />
+        <result column="reason" property="reason"/>
+    </resultMap>
+    <select id="getAllTrainees" resultMap="trainee">
+        SELECT yt.*, yu.name, yu.nick_name
+        FROM yan_user yu join yan_trainee yt on yu.id = yt.user_id
+        WHERE yu.is_delete = 0
+        and yt.is_delete = 0;
+    </select>
+
+    <select id="getTraineeSignEntityById" resultMap="traineeSign" parameterType="long">
+        SELECT * FROM yan_attendance ya WHERE ya.id = #{id}
+    </select>
+    <insert id="createUser" useGeneratedKeys="true" keyProperty="id" parameterType="com.yan.entity.UserEntity">
+        INSERT INTO yan_user(name, nick_name, role, create_dt)
+        VALUES(#{name},#{nickName},#{role},NOW())
+    </insert>
+
+    <insert id="createTrainee" useGeneratedKeys="true" keyProperty="id" parameterType="com.yan.entity.TraineeEntity">
+        INSERT INTO yan_trainee(user_id, level, latest_attendance_date, create_dt)
+        VALUES(#{userId},#{level},null,NOW())
+    </insert>
+
+    <insert id="traineeSign" useGeneratedKeys="true" keyProperty="id" parameterType="com.yan.dto.TraineeSignDto">
+        INSERT INTO yan_attendance(trainee_id, create_dt)
+        VALUES(#{traineeId},NOW())
+    </insert>
+
+    <update id="updateTraineeLastAttendance" parameterType="com.yan.entity.TraineeSignEntity">
+        UPDATE yan_trainee yt join yan_attendance ya ON yt.id = ya.trainee_id SET yt.latest_attendance_date = ya.create_dt WHERE ya.id = #{id}
+    </update>
+
+    <insert id="createTraineeAttendanceRecord" parameterType="com.yan.entity.TraineeSignEntity">
+        INSERT INTO yan_attendance_review(yan_attendance_id, create_dt)
+        VALUES(#{id},NOW())
+    </insert>
+
+    <select id="getYears" resultType="com.yan.entity.TraineeYearEntity" parameterType="long">
+        SELECT distinct year(create_dt) as year FROM yan_attendance ya WHERE ya.trainee_id = #{id}
+    </select>
+
+    <select id="getTraineeYearDetail" resultType="java.util.Map">
+        SELECT MONTH(ya.create_dt) as month,sum(1) as monthCount
+        FROM yan_attendance ya
+        WHERE ya.trainee_id = #{id}
+        and YEAR(ya.create_dt) = #{year}
+        GROUP BY MONTH(ya.create_dt);
+    </select>
+
+    <select id="getMonthDay" resultType="java.lang.Integer">
+        SELECT distinct Day(ya.create_dt) as day
+        FROM yan_attendance ya
+        WHERE ya.trainee_id = #{id}
+        and YEAR(ya.create_dt) = #{year} and MONTH(ya.create_dt) = #{month};
+    </select>
+
+    <select id="getSignDetails" resultMap="getSignDetails">
+        SELECT yar.id,yar.is_reviewed,yar.reason,yar.create_dt
+        FROM yan_attendance ya
+        join yan_attendance_review yar on ya.id = yar.yan_attendance_id
+        WHERE ya.trainee_id = #{id}
+        and YEAR(ya.create_dt) = #{year} and MONTH(ya.create_dt) = #{month}
+        and ya.is_delete is false;
+    </select>
+
+    <select id="getUnReviewedTraineeAttendance" resultType="com.yan.entity.TraineeAttendanceReviewEntity">
+        SELECT yar.*,ya.create_dt,yu.name,yu.nick_name
+        FROM yan_attendance ya
+        join yan_attendance_review yar on ya.id = yar.yan_attendance_id
+        join yan_trainee yt on yt.id = ya.trainee_id
+        join yan_user yu on yt.user_id = yu.id
+        <where>
+            <![CDATA[
+              TO_DAYS(NOW()) - TO_DAYS(ya.create_dt) <= 60
+            ]]>
+        </where> order by yar.create_dt desc;
+    </select>
+
+    <update id="reviewTraineeAttendance" parameterType="com.yan.dto.TraineeAttendanceReviewDto">
+        UPDATE yan_attendance_review yar SET yar.is_reviewed = #{active}, yar.reason=#{reason} WHERE yar.id=#{traineesAttendanceReviewId};
+    </update>
+</mapper>

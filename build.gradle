@@ -27,6 +27,6 @@ dependencies {
 	testImplementation "org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.2"
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
+//tasks.named('test') {
+//	useJUnitPlatform()
+//}

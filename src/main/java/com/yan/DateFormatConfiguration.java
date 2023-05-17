@@ -13,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.TimeZone;
 
 @Configuration
 public class DateFormatConfiguration implements WebMvcConfigurer {
@@ -24,6 +25,7 @@ public class DateFormatConfiguration implements WebMvcConfigurer {
         ObjectMapper objectMapper = converter.getObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT"));
         converter.setObjectMapper(objectMapper);
         converters.add(0,converter);
     }

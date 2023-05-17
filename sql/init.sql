@@ -42,7 +42,7 @@ CREATE TABLE yan_attendance_review
 (
     id int auto_increment,
     yan_attendance_id int not null,
-    is_reviewd int default 0 comment '',
+    is_reviewed int default 0 comment '',
     reason varchar(255) default '' comment '如果 is_reviewed = 0, 则填写该值',
     create_dt datetime,
     primary key (id),

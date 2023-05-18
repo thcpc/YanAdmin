@@ -1,5 +1,6 @@
 package com.yan.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yan.dto.TraineeDto;
 
@@ -17,6 +18,7 @@ public class TraineeEntity implements Serializable {
     private String nickName;
 
     private int level;
+    @JsonFormat(timezone = "GMT+8")
     private Date latestAttendanceDate;
     private Date createDt;
 

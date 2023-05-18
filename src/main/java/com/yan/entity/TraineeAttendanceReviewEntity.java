@@ -1,5 +1,6 @@
 package com.yan.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public class TraineeAttendanceReviewEntity implements Serializable {
 
     @JsonProperty("isReviewed")
     private int is_reviewed;
+    @JsonFormat(timezone = "GMT+8")
     private Date createDt;
 
     private String reason;

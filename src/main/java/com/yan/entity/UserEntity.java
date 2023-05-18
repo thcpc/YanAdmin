@@ -1,5 +1,6 @@
 package com.yan.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yan.dto.UserDto;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ public class UserEntity {
     private String name;
     private String nickName;
     private String role;
+    @JsonFormat(timezone = "GMT+8")
     private Date createDt;
 
     private boolean isDelete;

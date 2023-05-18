@@ -1,4 +1,5 @@
 package com.yan.entity;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yan.dto.TraineeSignDto;
 
@@ -11,6 +12,7 @@ public class TraineeSignEntity implements Serializable {
     private long traineeId;
     private boolean isDelete;
     @JsonProperty("latestAttendanceDate")
+    @JsonFormat(timezone = "GMT+8")
     private Date createDt;
 
 

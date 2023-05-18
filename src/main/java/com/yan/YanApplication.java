@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.TimeZone;
+
 @SpringBootApplication
 @MapperScan(basePackages = {"com.yan.dao"})
 @ComponentScan(basePackages = {"com.yan"})
@@ -21,6 +23,7 @@ public class YanApplication {
 	private Cors cors;
 
 	public static void main(String[] args) {
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		SpringApplication.run(YanApplication.class, args);
 	}
 
